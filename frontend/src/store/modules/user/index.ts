@@ -37,7 +37,16 @@ const useUserStore = defineStore('user', () => {
         }
     })
     const setInfo = (partial: UserState) => {
-        userState = {...userState, ...partial}
+        userState.userRolePermissions = partial.userRolePermissions
+        userState.userRoles = partial.userRoles
+        userState.userRoleRelations = partial.userRoleRelations
+        userState.name = partial.name
+        userState.avatar = partial.avatar
+        userState.email = partial.email
+        userState.phone = partial.phone
+        userState.id = partial.id
+        userState.lastProjectId = partial.lastProjectId
+        userState.lastOrganizationId = partial.lastOrganizationId
     }
     const login = async (data: { username: string, password: string }) => {
         try {

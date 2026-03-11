@@ -8,7 +8,7 @@ const Setting: RouteRecordRaw = {
     meta: {
         locale: 'menu.settings',
         collapsedLocale: 'menu.settingsShort',
-        icon: 'icon-a-icon_system_settings',
+        icon: 'carbon:settings',
         order: 8,
         roles: [
             'SYSTEM_USER:READ',

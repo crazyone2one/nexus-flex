@@ -5,8 +5,9 @@ export default defineConfig({
     // ...UnoCSS options
     presets: [presetIcons({
         collections: {
-            // ion: () => import('@iconify-json/ion/icons.json').then(i => i.default)
+            carbon: () => import('@iconify-json/carbon/icons.json').then(i => i.default)
         }
     }), presetWind3()],
     transformers: [transformerDirectives()],
+    safelist: ['i-carbon:chart-combo', 'i-carbon:settings']
 })

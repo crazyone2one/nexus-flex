@@ -1,7 +1,7 @@
 import {createRouter, createWebHashHistory} from "vue-router";
 import {NOT_FOUND_ROUTE} from "/@/router/routers/base.ts";
-import Setting from "/@/router/routers/modules/setting.ts";
 import createRouteGuard from "/@/router/guard";
+import appRoutes from "/@/router/routers";
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -17,9 +17,8 @@ const router = createRouter({
                 requiresAuth: true,
             },
             children: [
-                {path: '/dashboard', name: 'dashboard', component: () => import('/@/views/dashboard/index.vue')},
-                {...Setting},
-                NOT_FOUND_ROUTE
+                // {path: '/dashboard', name: 'dashboard', component: () => import('/@/views/dashboard/index.vue')},
+                ...appRoutes,
             ]
         },
         {
@@ -28,6 +27,7 @@ const router = createRouter({
                 requiresAuth: false,
             },
         },
+        NOT_FOUND_ROUTE
     ],
     scrollBehavior() {
         return {top: 0};

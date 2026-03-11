@@ -19,6 +19,7 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@iconify-json/carbon": "^1.2.19",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^24.10.1",
     "@unocss/preset-icons": "^66.6.5",

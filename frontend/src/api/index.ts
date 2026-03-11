@@ -72,7 +72,6 @@ export const NFR = createAlova({
             const json = await response.clone().json();
             const msg: string = json?.data?.message ?? '';
             if (response.status >= 400) {
-
                 switch (response.status) {
                     case 403:
                         message.error(json.message);
@@ -124,6 +123,8 @@ export const NFR = createAlova({
         },
         onComplete: async _ => {
             // 处理请求完成逻辑
+            const appStore = useAppStore();
+            appStore.hideLoading();
         }
     })
 });
