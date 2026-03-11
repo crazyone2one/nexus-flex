@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: nexus-flex
+  profiles:
+    active: dev
+  data:
+    redis:
+      repositories:
+        enabled: false # 禁用 Spring Data Redis 的自动仓库扫描
+  messages:
+    basename: i18n/commons,i18n/api,i18n/system,i18n/bug,i18n/case,i18n/project,i18n/plan
+    default-locale: zh_CN
