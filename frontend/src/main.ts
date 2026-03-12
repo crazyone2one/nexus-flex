@@ -9,6 +9,7 @@ import router from './router/index.ts'
 import {setupI18n} from "/@/i18n";
 import useLocale from '/@/i18n/use-locale.ts'
 import {userApi} from "/@/api/modules/user.ts";
+import directive from './directive';
 
 const bootstrap = async () => {
     const app = createApp(App)
@@ -22,6 +23,7 @@ const bootstrap = async () => {
         const {changeLocale} = useLocale();
         await changeLocale(defaultLocale);
     }
+    app.use(directive);
     app.mount('#app')
 }
 bootstrap().then(() => {

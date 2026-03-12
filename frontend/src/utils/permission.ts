@@ -30,6 +30,12 @@ export const hasAnyPermission = (permissions: string[], typeList = ['PROJECT', '
     }
     return permissions.some((permission) => hasPermission(permission, typeList));
 }
+export const hasAllPermission = (permissions: string[], typeList = ['PROJECT', 'ORGANIZATION', 'SYSTEM']) => {
+    if (!permissions || permissions.length === 0) {
+        return true;
+    }
+    return permissions.every((permission) => hasPermission(permission, typeList));
+}
 export const topLevelMenuHasPermission = (route: RouteLocationNormalized | RouteRecordRaw) => {
     const userStore = useUserStore();
     const appStore = useAppStore();
