@@ -15,16 +15,20 @@ const renderMenuOptions = () => {
     if (_route) {
       _route.forEach(element => {
         const option: MenuOption = {
-          label: () => h(RouterLink, {to: {name: element?.name}}, {default: () => t(element?.meta?.locale as string)}),
+          label: () => element?.name === SettingRouteEnum.SETTING_ORGANIZATION
+              ? t(element?.meta?.locale as string)
+              : h(RouterLink, {to: {name: element?.name}}, {default: () => t(element?.meta?.locale as string)}),
           key: element?.name as string,
           icon: () => h('div', {class: `i-${element?.meta?.icon}`}),
         };
         if (element?.name !== SettingRouteEnum.SETTING) {
           option.type = 'group'
         }
-
+        if (element?.name === SettingRouteEnum.SETTING_ORGANIZATION) {
+          option.disabled = true
+        }
         if (element?.children && element.children.length !== 0) {
-          option.children = travel(element?.children)
+          option.children = travel(element?.children);
         }
         nodes.push(option as never);
       })

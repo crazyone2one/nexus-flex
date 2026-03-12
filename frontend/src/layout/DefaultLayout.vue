@@ -2,6 +2,7 @@
 import {useAppStore} from "/@/store";
 import NfBreadcrumb from '/@/components/nf-breadcrumb/index.vue'
 import SiderMenu from "/@/layout/components/SiderMenu.vue";
+import NavBar from "/@/layout/components/NavBar.vue";
 
 
 const appStore = useAppStore();
@@ -9,7 +10,7 @@ const appStore = useAppStore();
 
 <template>
   <n-layout position="absolute">
-    <n-layout-header bordered style="height: 64px; padding: 24px">顶部导航区域</n-layout-header>
+    <nav-bar/>
     <n-layout position="absolute" has-sider style="top: 64px; bottom: 64px">
       <sider-menu/>
       <n-layout>

@@ -132,8 +132,8 @@ const Setting: RouteRecordRaw = {
         {
             path: 'organization',
             name: SettingRouteEnum.SETTING_ORGANIZATION,
-            redirect: '',
             component: null,
+            redirect: '/setting/organization/member',
             meta: {
                 locale: 'menu.settings.organization',
                 roles: [

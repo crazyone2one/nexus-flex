@@ -36,7 +36,29 @@ const useAppStore = defineStore('app', () => {
         const setBreadcrumbList = (breadcrumbs: BreadcrumbItem[] | undefined) => {
             appState.breadcrumbList = breadcrumbs ? cloneDeep(breadcrumbs) : []
         }
-        return {appState, showLoading, hideLoading, setCurrentOrgId, setCurrentProjectId, setBreadcrumbList}
+        const setTopMenus = (menus: RouteRecordRaw[] | undefined) => {
+            appState.topMenus = menus ? [...menus] : []
+        }
+        const setCurrentTopMenu = (menu: RouteRecordRaw) => {
+            appState.currentTopMenu = cloneDeep(menu)
+        }
+        const getTopMenus = computed(() => {
+            return appState.topMenus
+        })
+        const getCurrentTopMenu = computed(() => {
+            return appState.currentTopMenu
+        })
+        return {
+            appState,
+            showLoading,
+            hideLoading,
+            setCurrentOrgId,
+            setCurrentProjectId,
+            setBreadcrumbList,
+            setTopMenus,
+            setCurrentTopMenu,
+            getTopMenus, getCurrentTopMenu
+        }
     }
     , {persist: {pick: ['appState.currentOrgId', 'appState.currentProjectId']}})
 
