@@ -14,7 +14,7 @@ const appStore = useAppStore();
     <n-layout position="absolute" has-sider style="top: 64px; bottom: 64px">
       <sider-menu/>
       <n-layout>
-        <n-layout-content content-style="padding: 24px;" :native-scrollbar="false">
+        <n-layout-content content-style="padding: 10px;" :native-scrollbar="false">
           <n-spin :show="appStore.appState.loading">
             <nf-breadcrumb/>
             <slot name="page">

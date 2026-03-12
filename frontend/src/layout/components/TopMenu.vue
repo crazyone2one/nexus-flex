@@ -16,7 +16,6 @@ const permission = usePermission();
 const activeMenus: Ref<RouteRecordName[]> = ref([]);
 
 const renderMenuOptions = (menus: RouteRecordRaw[]) => {
-  console.log(menus)
   function travel(_route: (RouteRecordRaw | null)[] | null, nodes = []) {
     if (_route) {
       _route.forEach(element => {
@@ -30,7 +29,6 @@ const renderMenuOptions = (menus: RouteRecordRaw[]) => {
         nodes.push(option as never);
       })
     }
-    console.log(nodes)
     return nodes
   }
 

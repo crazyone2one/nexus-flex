@@ -50,7 +50,7 @@ public class SystemProjectService {
                 .where(PROJECT.ORGANIZATION_ID.eq(request.getOrganizationId()))
                 .and(PROJECT.NAME.like(request.getKeyword()).or(PROJECT.NUM.like(request.getKeyword())))
                 .orderBy(PROJECT.CREATE_TIME.desc())
-                .pageAs(new Page<>(request.getCurrent(), request.getPageSize()), ProjectDTO.class);
+                .pageAs(new Page<>(request.getPage(), request.getPageSize()), ProjectDTO.class);
         projectService.buildUserInfo(page.getRecords());
         return page;
     }

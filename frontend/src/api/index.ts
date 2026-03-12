@@ -14,9 +14,9 @@ import {useI18n} from "/@/composables/useI18n.ts";
 const {onAuthRequired, onResponseRefreshToken} = createServerTokenAuthentication({
     refreshTokenOnSuccess: {
         isExpired: async (response, method) => {
-            const res = await response.clone().json();
+            // const res = await response.clone().json();
             const isExpired = method.meta && method.meta.isExpired;
-            return !method.url.includes('/auth/refresh') && (response.status === 401 || res.code === 100401) && !isExpired;
+            return !method.url.includes('/auth/refresh') && (response.status === 401) && !isExpired;
         },
         handler: async (_, method) => {
             method.meta = method.meta || {};
@@ -69,21 +69,21 @@ export const NFR = createAlova({
     responded: onResponseRefreshToken({
         onSuccess: async (response, method) => {
             const {t} = useI18n();
-            const json = await response.clone().json();
-            const msg: string = json?.data?.message ?? '';
+            // const json = await response.clone().json();
+            // const msg: string = json?.data?.message ?? '';
             if (response.status >= 400) {
                 switch (response.status) {
                     case 403:
-                        message.error(json.message);
+                        message.error(t('api.errMsg403'));
                         break;
                     case 405:
-                        message.error(msg || t('api.errMsg405'));
+                        message.error( t('api.errMsg405'));
                         break
                     case 408:
-                        message.error(msg || t('api.errMsg408'));
+                        message.error( t('api.errMsg408'));
                         break
                     case 500:
-                        message.error(msg || t('api.errMsg500'));
+                        message.error(t('api.errMsg500'));
                         break
                     default:
                         break;
@@ -93,7 +93,7 @@ export const NFR = createAlova({
             if (method.meta?.isBlob) {
                 return response.blob();
             }
-            // const json = await response.clone().json();
+            const json = await response.clone().json();
             if (json.code !== 100200) {
                 switch (json.code) {
                     case 100400:

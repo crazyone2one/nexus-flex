@@ -20,7 +20,6 @@ import cn.master.nexus.modules.system.mapper.SystemUserMapper;
 import cn.master.nexus.modules.system.mapper.UserRoleRelationMapper;
 import cn.master.nexus.modules.system.service.ProjectService;
 import com.mybatisflex.core.query.QueryChain;
-import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -193,7 +192,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
             Map<String, ProjectDTO> projectMap = projectDTOList.stream().collect(Collectors.toMap(ProjectDTO::getId, projectDTO -> projectDTO));
             records.forEach(projectDTO -> {
                 projectDTO.setMemberCount(projectMap.get(projectDTO.getId()).getMemberCount());
-                if (!projectDTO.getModuleSetting().isEmpty()) {
+                if (CollectionUtils.isNotEmpty(projectDTO.getModuleSetting())) {
                     projectDTO.setModuleIds(projectDTO.getModuleSetting());
                 }
             });
@@ -206,9 +205,10 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
                 .leftJoin(SYSTEM_USER).on(USER_ROLE_RELATION.USER_ID.eq(SYSTEM_USER.ID))
                 .where(USER_ROLE_RELATION.SOURCE_ID.in(projectIds));
 
-        return queryChain().select(PROJECT.ID, QueryMethods.count("distinct temp.id").as("memberCount"))
+        return queryChain().select(PROJECT.ID)
+                .select("count(distinct temp.id) as memberCount")
                 .from(PROJECT)
-                .leftJoin(queryChain.as("temp")).on(PROJECT.ID.eq("temp.source_id"))
+                .leftJoin(queryChain).as("temp").on(PROJECT.ID.eq("temp.source_id"))
                 .groupBy(PROJECT.ID)
                 .listAs(ProjectDTO.class);
     }

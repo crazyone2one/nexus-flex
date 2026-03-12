@@ -90,7 +90,7 @@ public class SystemProjectController {
     @PostMapping("page")
     @Operation(description = "系统设置-系统-组织与项目-项目-获取项目列表")
     @PreAuthorize("hasPermission('SYSTEM_ORGANIZATION_PROJECT','READ')")
-    public Page<ProjectDTO> page(@Parameter(description = "分页信息") @Validated ProjectRequest request) {
+    public Page<ProjectDTO> page(@RequestBody @Parameter(description = "分页信息") @Validated ProjectRequest request) {
         return systemProjectService.page(request);
     }
 

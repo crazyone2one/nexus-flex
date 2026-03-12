@@ -88,6 +88,24 @@ const menuOptions = computed(() => {
         :collapsed-icon-size="24"
         :options="menuOptions"
     />
+    <n-float-button position="fixed" shape="circle" bottom="65px" left="15px" type="primary"
+                    menu-trigger="click">
+      <n-icon>
+        <div class="i-carbon:user-avatar" />
+      </n-icon>
+      <template #menu>
+        <n-float-button shape="square" type="primary">
+          <n-icon>
+            <div class="i-carbon:user-sponsor"/>
+          </n-icon>
+        </n-float-button>
+        <n-float-button shape="square" type="primary">
+          <n-icon>
+            <div class="i-carbon:port-output"/>
+          </n-icon>
+        </n-float-button>
+      </template>
+    </n-float-button>
   </n-layout-sider>
 </template>
 

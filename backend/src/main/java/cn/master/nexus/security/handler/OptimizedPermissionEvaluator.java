@@ -13,6 +13,7 @@ import tools.jackson.core.type.TypeReference;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author : 11's papa
@@ -33,9 +34,9 @@ public class OptimizedPermissionEvaluator implements PermissionEvaluator {
             return false;
         }
         // L1: 检查核心角色 (内存，极快)
-        // if (userDetails.getAuthorities().stream().anyMatch(a -> Objects.equals(a.getAuthority(), "admin"))) {
-        //     return true;
-        // }
+        if (userDetails.getAuthorities().stream().anyMatch(a -> Objects.equals(a.getAuthority(), "admin"))) {
+            return true;
+        }
         // L2: 检查 Redis 中的全量权限集
         // Key: auth:perms:{userId}
         List<String> permissions = redissonClient.getList("auth:perms:" + userDetails.user().getId());
