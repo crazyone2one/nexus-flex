@@ -43,6 +43,9 @@ const {onAuthRequired, onResponseRefreshToken} = createServerTokenAuthentication
         if (token && (!method.meta?.authRole || method.meta?.authRole !== 'refreshToken')) {
             method.config.headers.Authorization = `Bearer ${token.accessToken}`;
         }
+        if (token && (method.meta?.authRole == 'refreshToken')) {
+            method.config.headers.Authorization = `Bearer ${token.refreshToken}`;
+        }
     }
 });
 
@@ -77,10 +80,10 @@ export const NFR = createAlova({
                         message.error(t('api.errMsg403'));
                         break;
                     case 405:
-                        message.error( t('api.errMsg405'));
+                        message.error(t('api.errMsg405'));
                         break
                     case 408:
-                        message.error( t('api.errMsg408'));
+                        message.error(t('api.errMsg408'));
                         break
                     case 500:
                         message.error(t('api.errMsg500'));

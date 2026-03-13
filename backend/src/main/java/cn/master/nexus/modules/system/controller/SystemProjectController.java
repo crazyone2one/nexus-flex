@@ -117,4 +117,10 @@ public class SystemProjectController {
     public void rename(@RequestBody @Validated({Updated.class}) UpdateProjectNameRequest request) {
         systemProjectService.rename(request, SessionUtils.getUserName());
     }
+
+    @GetMapping("/list/options/{organizationId}")
+    @Operation(summary = "根据组织ID获取所有有权限的项目")
+    public List<Project> getUserProject(@PathVariable String organizationId) {
+        return systemProjectService.getUserProject(organizationId, SessionUtils.getUserId());
+    }
 }

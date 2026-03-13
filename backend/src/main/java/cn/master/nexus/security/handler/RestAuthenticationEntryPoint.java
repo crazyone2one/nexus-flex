@@ -1,5 +1,6 @@
 package cn.master.nexus.security.handler;
 
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jspecify.annotations.NullMarked;
@@ -28,13 +29,13 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         String body = """
                 {
                   "timestamp": "%s",
-                  "status": 401,
+                  "code": 401,
                   "error": "Unauthorized",
                   "message": "Missing or invalid token",
-                  "path": "%s"
+                  "path": "%s",
+                  "messageDetail": "%s",
                 }
-                """.formatted(Instant.now().toString(), request.getRequestURI());
-
+                """.formatted(Instant.now().toString(), request.getRequestURI(), request.getAttribute(RequestDispatcher.ERROR_MESSAGE));
         response.getWriter().write(body);
     }
 }

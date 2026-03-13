@@ -7,10 +7,7 @@ import cn.master.nexus.common.util.JSON;
 import cn.master.nexus.common.util.Translator;
 import cn.master.nexus.modules.log.dto.LogDTO;
 import cn.master.nexus.modules.log.service.OperationLogService;
-import cn.master.nexus.modules.system.dto.AddProjectRequest;
-import cn.master.nexus.modules.system.dto.ProjectDTO;
-import cn.master.nexus.modules.system.dto.UpdateProjectNameRequest;
-import cn.master.nexus.modules.system.dto.UpdateProjectRequest;
+import cn.master.nexus.modules.system.dto.*;
 import cn.master.nexus.modules.system.dto.request.ProjectAddMemberBatchRequest;
 import cn.master.nexus.modules.system.entity.Project;
 import cn.master.nexus.modules.system.entity.SystemUser;
@@ -20,6 +17,7 @@ import cn.master.nexus.modules.system.mapper.SystemUserMapper;
 import cn.master.nexus.modules.system.mapper.UserRoleRelationMapper;
 import cn.master.nexus.modules.system.service.ProjectService;
 import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -61,6 +59,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         ProjectDTO projectDTO = new ProjectDTO();
 
         project.setName(addProjectDTO.getName());
+        project.setNum(addProjectDTO.getNum());
         project.setOrganizationId(addProjectDTO.getOrganizationId());
         checkProjectExistByName(project);
         project.setUpdateUser(createUser);
@@ -188,15 +187,34 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     public void buildUserInfo(List<ProjectDTO> records) {
         if (!records.isEmpty()) {
             List<String> projectIds = records.stream().map(ProjectDTO::getId).toList();
+            List<UserExtendDTO> users = getProjectAdminList(projectIds);
             List<ProjectDTO> projectDTOList = getProjectExtendDTOList(projectIds);
             Map<String, ProjectDTO> projectMap = projectDTOList.stream().collect(Collectors.toMap(ProjectDTO::getId, projectDTO -> projectDTO));
+            // 根据sourceId分组
+            Map<String, List<UserExtendDTO>> userMapList = users.stream().collect(Collectors.groupingBy(UserExtendDTO::getSourceId));
             records.forEach(projectDTO -> {
                 projectDTO.setMemberCount(projectMap.get(projectDTO.getId()).getMemberCount());
                 if (CollectionUtils.isNotEmpty(projectDTO.getModuleSetting())) {
                     projectDTO.setModuleIds(projectDTO.getModuleSetting());
                 }
+                List<UserExtendDTO> userExtendDTOS = userMapList.get(projectDTO.getId());
+                if (CollectionUtils.isNotEmpty(userExtendDTOS)) {
+                    projectDTO.setAdminList(userExtendDTOS);
+                    List<String> userIdList = userExtendDTOS.stream().map(UserExtendDTO::getUserId).collect(Collectors.toList());
+                    projectDTO.setProjectCreateUserIsAdmin(CollectionUtils.isNotEmpty(userIdList) && userIdList.contains(projectDTO.getCreateUser()));
+                } else {
+                    projectDTO.setAdminList(new ArrayList<>());
+                }
             });
         }
+    }
+
+    private List<UserExtendDTO> getProjectAdminList(List<String> projectIds) {
+        QueryWrapper queryWrapper = QueryWrapper.create()
+                .select("`system_user`.id as userId,`system_user`.name as userName,user_role_relation.source_id")
+                .from(USER_ROLE_RELATION).leftJoin(SYSTEM_USER).on(USER_ROLE_RELATION.USER_ID.eq(SYSTEM_USER.ID))
+                .where(USER_ROLE_RELATION.SOURCE_ID.in(projectIds).and(USER_ROLE_RELATION.ROLE_ID.eq("project_admin")));
+        return userRoleRelationMapper.selectListByQueryAs(queryWrapper, UserExtendDTO.class);
     }
 
     private List<ProjectDTO> getProjectExtendDTOList(List<String> projectIds) {
@@ -207,8 +225,8 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 
         return queryChain().select(PROJECT.ID)
                 .select("count(distinct temp.id) as memberCount")
-                .from(PROJECT)
-                .leftJoin(queryChain).as("temp").on(PROJECT.ID.eq("temp.source_id"))
+                .from(PROJECT).as("p")
+                .leftJoin(queryChain).as("temp").on("p.id = temp.source_id")
                 .groupBy(PROJECT.ID)
                 .listAs(ProjectDTO.class);
     }
@@ -302,6 +320,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 
     private void checkProjectExistByName(Project project) {
         boolean exists = queryChain().where(Project::getName).eq(project.getName())
+                .and(Project::getNum).eq(project.getNum())
                 .and(Project::getOrganizationId).eq(project.getOrganizationId())
                 .and(Project::getId).ne(project.getId()).exists();
         if (exists) {

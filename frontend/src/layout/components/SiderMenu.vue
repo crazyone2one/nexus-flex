@@ -27,7 +27,7 @@ const renderMenuOptions = () => {
         if (element?.name === SettingRouteEnum.SETTING_ORGANIZATION) {
           option.disabled = true
         }
-        if (element?.children && element.children.length !== 0) {
+        if (element?.children && element.children.length > 0) {
           option.children = travel(element?.children);
         }
         nodes.push(option as never);
@@ -91,7 +91,7 @@ const menuOptions = computed(() => {
     <n-float-button position="fixed" shape="circle" bottom="65px" left="15px" type="primary"
                     menu-trigger="click">
       <n-icon>
-        <div class="i-carbon:user-avatar" />
+        <div class="i-carbon:user-avatar"/>
       </n-icon>
       <template #menu>
         <n-float-button shape="square" type="primary">

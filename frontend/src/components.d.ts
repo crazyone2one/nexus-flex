@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppProvider: typeof import('./components/AppProvider.vue')['default']
     AppView: typeof import('./components/AppView.vue')['default']
+    BaseModal: typeof import('./components/BaseModal.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     NBreadcrumb: typeof import('naive-ui')['NBreadcrumb']
     NBreadcrumbItem: typeof import('naive-ui')['NBreadcrumbItem']
@@ -38,11 +39,15 @@ declare module 'vue' {
     NLoadingBarProvider: typeof import('naive-ui')['NLoadingBarProvider']
     NMenu: typeof import('naive-ui')['NMenu']
     NMessageProvider: typeof import('naive-ui')['NMessageProvider']
+    NModal: typeof import('naive-ui')['NModal']
     NNotificationProvider: typeof import('naive-ui')['NNotificationProvider']
     NResult: typeof import('naive-ui')['NResult']
     NSelect: typeof import('naive-ui')['NSelect']
     NSpin: typeof import('naive-ui')['NSpin']
+    NSwitch: typeof import('naive-ui')['NSwitch']
+    PermissionButton: typeof import('./components/PermissionButton.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ShowOrEditComp: typeof import('./components/ShowOrEditComp.vue')['default']
   }
 }

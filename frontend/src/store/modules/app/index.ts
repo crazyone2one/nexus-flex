@@ -4,6 +4,7 @@ import {featureRouteMap} from "/@/router/constants.ts";
 import type {BreadcrumbItem} from "/@/components/nf-breadcrumb/types.ts";
 import {cloneDeep} from "lodash-es";
 import type {RouteRecordRaw} from "vue-router";
+import {OrgProjectApi} from "/@/api/modules/OrgProject.ts";
 
 const useAppStore = defineStore('app', () => {
         const appState = reactive<AppState>({
@@ -15,7 +16,8 @@ const useAppStore = defineStore('app', () => {
             currentMenuConfig: Object.keys(featureRouteMap),
             breadcrumbList: [],
             topMenus: [],
-            currentTopMenu: {} as RouteRecordRaw
+            currentTopMenu: {} as RouteRecordRaw,
+            projectList: []
         })
         const showLoading = (tip = '') => {
             const {t} = useI18n();
@@ -48,6 +50,13 @@ const useAppStore = defineStore('app', () => {
         const getCurrentTopMenu = computed(() => {
             return appState.currentTopMenu
         })
+        const initProjectList = async () => {
+            if (appState.currentOrgId) {
+                appState.projectList = await OrgProjectApi.fetchProjectList(appState.currentOrgId);
+            } else {
+                appState.projectList = [];
+            }
+        }
         return {
             appState,
             showLoading,
@@ -57,7 +66,8 @@ const useAppStore = defineStore('app', () => {
             setBreadcrumbList,
             setTopMenus,
             setCurrentTopMenu,
-            getTopMenus, getCurrentTopMenu
+            getTopMenus, getCurrentTopMenu,
+            initProjectList
         }
     }
     , {persist: {pick: ['appState.currentOrgId', 'appState.currentProjectId']}})

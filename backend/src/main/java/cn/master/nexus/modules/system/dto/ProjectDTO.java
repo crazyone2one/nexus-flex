@@ -22,6 +22,10 @@ public class ProjectDTO extends Project implements Serializable {
     private Long memberCount;
     @Schema(description = "所属组织", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String organizationName;
+    @Schema(description = "管理员", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private List<UserExtendDTO> adminList;
+    @Schema(description = "创建人是否是管理员", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private Boolean projectCreateUserIsAdmin;
     @Schema(description = "模块设置", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private List<String> moduleIds;
 }

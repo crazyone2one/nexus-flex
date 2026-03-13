@@ -1,5 +1,6 @@
 import type {BreadcrumbItem} from "/@/components/nf-breadcrumb/types.ts";
 import type {RouteRecordRaw} from "vue-router";
+import type {ProjectListItem} from "/@/api/types/project.ts";
 
 export interface AppState {
     loading: boolean;
@@ -11,4 +12,5 @@ export interface AppState {
     breadcrumbList: BreadcrumbItem[];
     topMenus: RouteRecordRaw[];
     currentTopMenu: RouteRecordRaw;
+    projectList: ProjectListItem[];
 }

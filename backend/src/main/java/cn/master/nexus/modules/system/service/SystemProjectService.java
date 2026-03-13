@@ -1,21 +1,33 @@
 package cn.master.nexus.modules.system.service;
 
+import cn.master.nexus.common.constants.InternalUserRole;
 import cn.master.nexus.common.constants.OperationLogModule;
+import cn.master.nexus.common.exception.BusinessException;
+import cn.master.nexus.common.util.Translator;
 import cn.master.nexus.modules.system.dto.AddProjectRequest;
 import cn.master.nexus.modules.system.dto.ProjectDTO;
 import cn.master.nexus.modules.system.dto.UpdateProjectNameRequest;
 import cn.master.nexus.modules.system.dto.UpdateProjectRequest;
 import cn.master.nexus.modules.system.dto.request.ProjectRequest;
 import cn.master.nexus.modules.system.entity.Project;
+import cn.master.nexus.modules.system.entity.SystemOrganization;
+import cn.master.nexus.modules.system.entity.SystemUser;
+import cn.master.nexus.modules.system.entity.UserRoleRelation;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryMethods;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static cn.master.nexus.modules.system.entity.table.ProjectTableDef.PROJECT;
 import static cn.master.nexus.modules.system.entity.table.SystemOrganizationTableDef.SYSTEM_ORGANIZATION;
+import static cn.master.nexus.modules.system.entity.table.SystemUserTableDef.SYSTEM_USER;
+import static cn.master.nexus.modules.system.entity.table.UserRoleRelationTableDef.USER_ROLE_RELATION;
+import static cn.master.nexus.modules.system.entity.table.UserRoleTableDef.USER_ROLE;
 
 /**
  * @author : 11's papa
@@ -25,6 +37,7 @@ import static cn.master.nexus.modules.system.entity.table.SystemOrganizationTabl
 @RequiredArgsConstructor
 public class SystemProjectService {
     private final ProjectService projectService;
+    private final Translator translator;
     private final static String PREFIX = "/system/project";
     private final static String ADD_PROJECT = PREFIX + "/add";
     private final static String UPDATE_PROJECT = PREFIX + "/update";
@@ -73,5 +86,50 @@ public class SystemProjectService {
 
     public void enable(String id, String userName) {
         projectService.enable(id, userName);
+    }
+
+    public List<Project> getUserProject(String organizationId, String userId) {
+        checkOrg(organizationId);
+        SystemUser user = QueryChain.of(SystemUser.class).where(SYSTEM_USER.ID.eq(userId)).one();
+        String projectId;
+        if (user != null && StringUtils.isNotBlank(user.getLastProjectId())) {
+            projectId = user.getLastProjectId();
+        } else {
+            projectId = null;
+        }
+        // 判断用户是否是系统管理员
+        List<Project> allProject;
+        boolean exists = QueryChain.of(UserRoleRelation.class).where(USER_ROLE_RELATION.USER_ID.eq(userId)
+                .and(USER_ROLE_RELATION.ROLE_ID.eq(InternalUserRole.ADMIN.name()))).exists();
+        if (exists) {
+            allProject = QueryChain.of(Project.class).where(PROJECT.ORGANIZATION_ID.eq(organizationId)
+                    .and(PROJECT.ENABLE.eq(true))).list();
+        } else {
+            allProject = QueryChain.of(Project.class)
+                    .select(QueryMethods.distinct(PROJECT.ALL_COLUMNS))
+                    .from(USER_ROLE).join(USER_ROLE_RELATION).on(USER_ROLE.ID.eq(USER_ROLE_RELATION.ROLE_ID))
+                    .join(PROJECT).on(USER_ROLE_RELATION.SOURCE_ID.eq(PROJECT.ID))
+                    .join(SYSTEM_USER).on(USER_ROLE_RELATION.USER_ID.eq(SYSTEM_USER.ID))
+                    .where(USER_ROLE_RELATION.USER_ID.eq(userId).and(USER_ROLE.TYPE.eq("PROJECT"))
+                            .and(PROJECT.ORGANIZATION_ID.eq(organizationId))
+                            .and(PROJECT.ENABLE.eq(true)))
+                    .orderBy(PROJECT.NAME.asc())
+                    .list();
+        }
+        List<Project> temp = allProject;
+        return allProject.stream()
+                .filter(project -> Strings.CS.equals(project.getId(), projectId))
+                .findFirst()
+                .map(project -> {
+                    temp.remove(project);
+                    temp.addFirst(project);
+                    return temp;
+                })
+                .orElse(allProject);
+    }
+
+    private void checkOrg(String organizationId) {
+        QueryChain.of(SystemOrganization.class).where(SYSTEM_ORGANIZATION.ID.eq(organizationId))
+                .oneOpt().orElseThrow(() -> new BusinessException(translator.get("organization_not_exist")));
     }
 }

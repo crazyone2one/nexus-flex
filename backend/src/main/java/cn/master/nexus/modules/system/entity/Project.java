@@ -49,7 +49,7 @@ public class Project implements Serializable {
      * 项目编号
      */
     @Schema(description = "项目编号")
-    private Long num;
+    private String num;
 
     @Schema(description = "组织ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "{project.organization_id.not_blank}", groups = {Created.class})
